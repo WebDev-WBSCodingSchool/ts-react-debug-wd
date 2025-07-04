@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLoaderData, useFetcher } from 'react-router';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { EventsList, EventsMarkers, MapBounds, PanOnHover } from '@/components';
+import { EventsList, EventsMarkers, Loading, MapBounds, PanOnHover } from '@/components';
 import 'leaflet/dist/leaflet.css';
 
 const Events = () => {
@@ -50,14 +50,13 @@ const Events = () => {
           <h1 className='text-2xl font-bold p-4'>Upcoming Events</h1>
           <div className='grid grid-cols-2 gap-4'>
             <EventsList events={allEvents} setHighlightedEvent={setHighlightedEvent} />
-            <div ref={observerRef} className='h-4'>
-              {fetcher.state === 'loading' && (
-                <div className='flex justify-center items-center p-4'>
-                  <div className='loading loading-spinner loading-md'></div>
-                </div>
-              )}
-            </div>
+            <div ref={observerRef} className='h-4'></div>
           </div>
+          {fetcher.state === 'loading' && (
+            <div className='w-full flex items-center justify-center'>
+              <span className='loading loading-ring loading-xl text-primary'></span>
+            </div>
+          )}
         </div>
         <div className='hidden md:block md:w-3/5 h-[870px] rounded-2xl overflow-hidden sticky top-20'>
           <MapContainer zoom={13} className='h-full '>
