@@ -20,7 +20,7 @@ const Events = () => {
     try {
       const nextPage = currentPage + 1;
       const newData = await getEventsPage(nextPage, 10);
-      setAllEvents((prev: Event[]) => [...prev, ...newData.results]);
+      setAllEvents((prev) => [...prev, ...newData.results]);
       setCurrentPage(newData.currentPage);
       setHasNextPage(newData.hasNextPage);
     } catch (error) {
