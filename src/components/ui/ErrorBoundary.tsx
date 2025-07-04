@@ -5,7 +5,10 @@ const ErrorBoundary = () => {
   const navigate = useNavigate();
   const isResponseError = isRouteErrorResponse(error);
 
-  if (isResponseError && error.status === 404) return navigate('/not-found');
+  if (isResponseError && error.status === 404) {
+    navigate('/', { replace: true });
+    return null;
+  }
   return (
     <div className='flex flex-col items-center justify-center absolute inset-0'>
       <h1 className='text-4xl font-extrabold lg:text-6xl text-transparent bg-linear-to-r from-[#6054e8] to-[#f8485e] bg-clip-text'>
