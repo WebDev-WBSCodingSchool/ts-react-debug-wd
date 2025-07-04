@@ -11,12 +11,12 @@ const Home = () => {
           className='absolute inset-0'
           style={{
             backgroundImage:
-              'url(https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)',
+              'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)',
             backgroundSize: 'cover',
-            backgroundPosition: 'center'
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed'
           }}
         ></div>
-        <div className='hero-overlay bg-black opacity-60 absolute inset-0'></div>
         <div className='hero-content text-center text-neutral-content relative z-10'>
           <div className='max-w-md'>
             <h1 className='mb-5 text-5xl font-bold text-white drop-shadow-lg'>Welcome to Venued</h1>
@@ -176,7 +176,8 @@ const Home = () => {
           backgroundImage:
             'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          backgroundPosition: 'top center',
+          backgroundAttachment: 'fixed'
         }}
       >
         <div className='container mx-auto px-4 text-center relative z-10'>
