@@ -1,11 +1,13 @@
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router';
+import { MainLayout } from '@/layouts';
+import { Home } from '@/pages';
+import { Loading } from '@/components';
 import { getAllEvents } from '@/data';
 import { createEventAction } from '@/actions';
-import { Home } from './pages';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route>
+    <Route element={<MainLayout />} hydrateFallbackElement={<Loading />}>
       <Route path='/' element={<Home />} loader={getAllEvents} action={createEventAction} />
     </Route>
   )
