@@ -1,4 +1,6 @@
 export { default as ErrorBoundary } from './ui/ErrorBoundary';
+export { default as EventsList } from './map/EventsList';
+export { default as EventsMarkers } from './map/EventsMarkers';
 export { default as Footer } from './ui/Footer';
 export { default as Loading } from './ui/Loading';
 export { default as MapBounds } from './map/MapBounds';
