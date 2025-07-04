@@ -1,34 +1,31 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useLoaderData } from 'react-router';
+import { useLoaderData, useFetcher } from 'react-router';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { EventsList, EventsMarkers, MapBounds, PanOnHover } from '@/components';
-import { getEventsPage } from '@/data';
 import 'leaflet/dist/leaflet.css';
 
 const Events = () => {
   const initialData = useLoaderData();
+  const fetcher = useFetcher();
   const [allEvents, setAllEvents] = useState(initialData.results);
   const [currentPage, setCurrentPage] = useState(initialData.currentPage);
   const [hasNextPage, setHasNextPage] = useState(initialData.hasNextPage);
-  const [loading, setLoading] = useState(false);
   const [highlightedEvent, setHighlightedEvent] = useState(null);
   const observerRef = useRef(null);
 
   const loadMoreEvents = useCallback(async () => {
-    if (loading || !hasNextPage) return;
-    setLoading(true);
-    try {
-      const nextPage = currentPage + 1;
-      const newData = await getEventsPage(nextPage, 10);
-      setAllEvents((prev) => [...prev, ...newData.results]);
-      setCurrentPage(newData.currentPage);
-      setHasNextPage(newData.hasNextPage);
-    } catch (error) {
-      console.error('Error loading more events:', error);
-    } finally {
-      setLoading(false);
+    if (fetcher.state === 'loading' || !hasNextPage) return;
+    fetcher.load(`/events?page=${currentPage + 1}&limit=10`);
+  }, [currentPage, hasNextPage, fetcher]);
+
+  useEffect(() => {
+    if (fetcher.data && fetcher.state === 'idle') {
+      const fetchedData = fetcher.data;
+      setAllEvents((prev) => [...prev, ...fetchedData.results]);
+      setCurrentPage(fetchedData.currentPage);
+      setHasNextPage(fetchedData.hasNextPage);
     }
-  }, [currentPage, hasNextPage, loading]);
+  }, [fetcher.data, fetcher.state]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -48,13 +45,13 @@ const Events = () => {
   return (
     <>
       <title>Upcoming Events</title>
-      <div className='flex flex-col md:flex-row justify-between gap-5'>
+      <div className='flex flex-col md:flex-row justify-between gap-5 my-3'>
         <div className='w-full md:w-2/5 p-4 overflow-y-auto'>
           <h1 className='text-2xl font-bold p-4'>Upcoming Events</h1>
           <div className='grid grid-cols-2 gap-4'>
             <EventsList events={allEvents} setHighlightedEvent={setHighlightedEvent} />
             <div ref={observerRef} className='h-4'>
-              {loading && (
+              {fetcher.state === 'loading' && (
                 <div className='flex justify-center items-center p-4'>
                   <div className='loading loading-spinner loading-md'></div>
                 </div>
@@ -62,7 +59,7 @@ const Events = () => {
             </div>
           </div>
         </div>
-        <div className='md:w-3/5 h-[800px] rounded-2xl overflow-hidden sticky top-20'>
+        <div className='hidden md:block md:w-3/5 h-[870px] rounded-2xl overflow-hidden sticky top-20'>
           <MapContainer zoom={13} className='h-full '>
             <TileLayer url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' />
             <MapBounds events={allEvents} />
