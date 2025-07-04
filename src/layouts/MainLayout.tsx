@@ -7,7 +7,7 @@ const MainLayout = () => {
       <input id='main-drawer' type='checkbox' className='drawer-toggle' />
       <div className='drawer-content'>
         <NavBar />
-        <div className='min-h-[calc(100vh-64px-68px)] container mx-auto p4'>
+        <div className='min-h-[calc(100vh-64px-68px) p4'>
           <Outlet />
         </div>
         <Footer />

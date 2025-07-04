@@ -2,7 +2,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import { MainLayout } from '@/layouts';
 import { Events, Home, NotFound } from '@/pages';
 import { ErrorBoundary, Loading } from '@/components';
-import { getAllEvents } from '@/data';
+import { getAllEvents, getHomePageData } from '@/data';
 import { createEventAction } from '@/actions';
 
 const router = createBrowserRouter(
@@ -13,7 +13,7 @@ const router = createBrowserRouter(
       hydrateFallbackElement={<Loading />}
       errorElement={<ErrorBoundary />}
     >
-      <Route index element={<Home />} loader={getAllEvents} action={createEventAction} />
+      <Route index element={<Home />} loader={getHomePageData} />
       <Route path='events' element={<Events />} loader={getAllEvents} action={createEventAction} />
       <Route path='*' element={<NotFound />} />
     </Route>
