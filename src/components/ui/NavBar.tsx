@@ -20,7 +20,9 @@ const NavBar = () => {
             ></path>
           </svg>
         </label>
-        <a className='btn btn-ghost text-xl'>Events!</a>
+        <Link to='/' className='btn btn-ghost text-xl'>
+          Events!
+        </Link>
       </div>
       <div className='navbar-end hidden lg:flex'>
         <ul className='menu menu-horizontal px-1'>
