@@ -1,69 +1,25 @@
-# React + TypeScript + Vite
+# Events SPA + TypeScript
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This application should feel familiar. You worked on creating a front end app with React as a client to the [Events API](https://github.com/WebDev-WBSCodingSchool/events-api). Today we have a new challenge: Add type annotations to the app until the build process throws no errors!
 
-Currently, two official plugins are available:
+You'll see, this app works but since it lacks type annotations, the TypeScript compiler is not happy. Your job is to add those annotations so scaling this app and adding new features is better for you as a developer and less error prone.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Setup
 
-## Expanding the ESLint configuration
+1. Make sure to setup the [Events API](https://github.com/WebDev-WBSCodingSchool/events-api), you'll need that app running and it's base URL, e.g. `http://localhost:3001/api`
+2. Clone this repo into your local computer
+3. Create a `.env.development.local` file with a `VITE_EVENTS_API_URL` pointing to the base URL of your events API
+4. Install dependencies and spin up the development server
+5. The app should work!
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Task
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Stop the development server and try to build the app with `npm run build` Aaaaaand... it doesn't work 👁️👄👁️
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked
+`TS2339` here, `TS2322` over there. You need to fix those errors. How? well go to each line on each file mentioned in the terminal output and add the pertinent type annotations.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname
-      }
-      // other options...
-    }
-  }
-]);
-```
+If you can run the build command without errors, you're a done!
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+P.S. Avoid using `any` or the `// @ts-expect-error` directive because what's the point? You want the application to truly be resilient and scalable!
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname
-      }
-      // other options...
-    }
-  }
-]);
-```
+Have fun!
