@@ -1,8 +1,11 @@
 import { Link } from 'react-router';
 import { IoLocationSharp } from 'react-icons/io5';
+import { useAuth } from '@/contexts';
 import { menuList } from '@/utils';
 
 const NavBar = () => {
+  const { isAuthenticated, logout } = useAuth();
+
   return (
     <div className='navbar bg-base-300 sticky top-0 z-50'>
       <div className='navbar-start'>
@@ -27,15 +30,29 @@ const NavBar = () => {
         </Link>
       </div>
       <div className='navbar-end hidden lg:flex'>
-        <ul className='menu menu-horizontal px-1'>
-          {menuList.map((item) => (
-            <li key={item.path}>
-              <Link to={item.path} className='flex items-center'>
-                {item.icon && <span className='mr-2'>{item.icon}</span>}
-                {item.label}
-              </Link>
+        <ul className='menu menu-horizontal px-1 gap-2 items-center'>
+          {menuList
+            .filter(
+              (item) =>
+                item.visibility === 'public' ||
+                (item.visibility === 'private' && isAuthenticated) ||
+                (item.visibility === 'noauth' && !isAuthenticated)
+            )
+            .map((item) => (
+              <li key={item.label}>
+                <Link
+                  to={item.path}
+                  className={item.cta ? `btn ${item.ctaType} rounded-2xl text-lg` : ''}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          {isAuthenticated && (
+            <li onClick={logout}>
+              <span>Log out</span>
             </li>
-          ))}
+          )}
         </ul>
       </div>
     </div>

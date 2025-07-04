@@ -29,9 +29,11 @@ export async function loginAction({ request }) {
       throw new Error(error.error || 'Login failed');
     }
     const { user, token } = await response.json();
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
-    return redirect('/app');
+    return {
+      success: true,
+      user,
+      token
+    };
   } catch (error) {
     return {
       error: error.message

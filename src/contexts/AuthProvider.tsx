@@ -4,18 +4,16 @@ import { AuthContext } from '.';
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const tryToLoginUser = async () => {
-      const savedToken = localStorage.getItem('token');
-      const savedUser = localStorage.getItem('user');
-      if (savedToken && savedUser) {
+      if (token) {
         const response = await fetch(`${API_URL}/auth/profile`, {
           headers: {
-            Authorization: `Bearer ${savedToken}`
+            Authorization: `Bearer ${token}`
           }
         });
         if (!response.ok) {
@@ -23,13 +21,18 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
           throw new Error(error.message || 'Failed to get profile');
         }
         const profile = await response.json();
-        setToken(savedToken);
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(profile));
         setUser(profile);
       }
       setLoading(false);
     };
     tryToLoginUser();
-  }, []);
+  }, [token]);
+
+  const login = (token) => {
+    setToken(token);
+  };
 
   const logout = () => {
     setUser(null);
@@ -43,6 +46,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value = {
     user,
     token,
+    login,
     logout,
     isAuthenticated,
     loading

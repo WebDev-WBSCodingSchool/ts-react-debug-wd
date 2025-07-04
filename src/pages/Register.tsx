@@ -8,7 +8,7 @@ const Register = () => {
   if (isAuthenticated) return <Navigate to='/app' replace />;
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-base-200'>
+    <div className='flex items-center justify-center absolute inset-0'>
       <div className='w-full max-w-md p-8 space-y-4 bg-base-100 shadow-xl rounded-box'>
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>Create your account</h2>

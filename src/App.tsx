@@ -8,8 +8,6 @@ import { createEventAction, loginAction, registerAction } from '@/actions';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path='/login' element={<Login />} action={loginAction} />
-      <Route path='/register' element={<Register />} action={registerAction} />
       <Route
         path='/'
         element={<MainLayout />}
@@ -17,6 +15,8 @@ const router = createBrowserRouter(
         errorElement={<ErrorBoundary />}
       >
         <Route index element={<Home />} loader={getHomePageData} />
+        <Route path='/login' element={<Login />} action={loginAction} />
+        <Route path='/register' element={<Register />} action={registerAction} />
         <Route
           path='events'
           element={<Events />}

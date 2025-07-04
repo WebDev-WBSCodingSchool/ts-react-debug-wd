@@ -1,14 +1,21 @@
+import { useEffect } from 'react';
 import { Form, useActionData, Link, Navigate } from 'react-router';
 import { useAuth } from '@/contexts';
 
 const Login = () => {
   const actionData = useActionData();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, login } = useAuth();
+
+  useEffect(() => {
+    if (actionData?.token) {
+      login(actionData?.token);
+    }
+  }, [actionData?.token, login]);
 
   if (isAuthenticated) return <Navigate to='/app' replace />;
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-base-200'>
+    <div className='flex items-center justify-center absolute inset-0'>
       <div className='w-full max-w-md p-8 space-y-4 bg-base-100 shadow-xl rounded-box'>
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>Sign in to your account</h2>
@@ -24,9 +31,7 @@ const Login = () => {
               <span className='label-text'>Email address</span>
             </label>
             <input
-              id='email'
               name='email'
-              type='email'
               required
               placeholder='Enter your email'
               className='input input-bordered w-full'
@@ -37,10 +42,8 @@ const Login = () => {
               <span className='label-text'>Password</span>
             </label>
             <input
-              id='password'
               name='password'
               type='password'
-              required
               placeholder='Enter your password'
               className='input input-bordered w-full'
             />
