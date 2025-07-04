@@ -1,6 +1,6 @@
 const menuList = [
   { label: 'Home', path: '/' },
-  { label: 'About', path: '/about' },
+  { label: 'Events', path: '/events' },
   { label: 'Contact', path: '/contact' }
 ];
 
