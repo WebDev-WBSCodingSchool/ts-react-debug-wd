@@ -2,8 +2,14 @@ import { Link } from 'react-router';
 import { useAuth } from '@/contexts';
 import { menuList } from '@/utils';
 
-const SideBar = () => {
+const SideBar = ({ drawerRef }) => {
   const { isAuthenticated, logout } = useAuth();
+
+  const closeSidebar = () => {
+    if (drawerRef.current) {
+      drawerRef.current.checked = false;
+    }
+  };
 
   return (
     <div className='drawer-side'>
@@ -24,13 +30,19 @@ const SideBar = () => {
               <Link
                 to={item.path}
                 className={item.cta ? `w-1/2 btn ${item.ctaType} rounded-xl` : ''}
+                onClick={closeSidebar}
               >
                 {item.label}
               </Link>
             </li>
           ))}
         {isAuthenticated && (
-          <li onClick={logout}>
+          <li
+            onClick={() => {
+              logout();
+              closeSidebar();
+            }}
+          >
             <span>Log out</span>
           </li>
         )}
