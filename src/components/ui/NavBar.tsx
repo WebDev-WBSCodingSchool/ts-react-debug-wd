@@ -1,9 +1,10 @@
 import { Link } from 'react-router';
+import { IoLocationSharp } from 'react-icons/io5';
 import { menuList } from '@/utils';
 
 const NavBar = () => {
   return (
-    <div className='navbar bg-base-200'>
+    <div className='navbar bg-base-300 sticky top-0 z-50'>
       <div className='navbar-start'>
         <label htmlFor='main-drawer' className='btn btn-square btn-ghost lg:hidden'>
           <svg
@@ -20,8 +21,9 @@ const NavBar = () => {
             ></path>
           </svg>
         </label>
-        <Link to='/' className='btn btn-ghost text-xl'>
-          Events!
+        <Link to='/' className='flex items-center text-3xl'>
+          <IoLocationSharp />
+          Venued
         </Link>
       </div>
       <div className='navbar-end hidden lg:flex'>
