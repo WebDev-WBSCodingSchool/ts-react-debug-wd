@@ -1,7 +1,10 @@
 import { Link } from 'react-router';
+import { useAuth } from '@/contexts';
 import { menuList } from '@/utils';
 
 const SideBar = () => {
+  const { isAuthenticated, logout } = useAuth();
+
   return (
     <div className='drawer-side'>
       <label htmlFor='main-drawer' aria-label='close sidebar' className='drawer-overlay'></label>
@@ -9,14 +12,28 @@ const SideBar = () => {
         <li className='mb-2'>
           <h2 className='menu-title'>Navigation</h2>
         </li>
-        {menuList.map((item) => (
-          <li key={item.path}>
-            <Link to={item.path} className='flex items-center'>
-              {item.icon && <span className='mr-2'>{item.icon}</span>}
-              {item.label}
-            </Link>
+        {menuList
+          .filter(
+            (item) =>
+              item.visibility === 'public' ||
+              (item.visibility === 'private' && isAuthenticated) ||
+              (item.visibility === 'noauth' && !isAuthenticated)
+          )
+          .map((item) => (
+            <li key={item.label}>
+              <Link
+                to={item.path}
+                className={item.cta ? `w-1/2 btn ${item.ctaType} rounded-xl` : ''}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        {isAuthenticated && (
+          <li onClick={logout}>
+            <span>Log out</span>
           </li>
-        ))}
+        )}
       </ul>
     </div>
   );

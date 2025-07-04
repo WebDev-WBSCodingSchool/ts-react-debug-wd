@@ -1,6 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router';
 import { MainLayout, ProtectedLayout } from '@/layouts';
-import { Events, Home, NotFound, Login, Register } from '@/pages';
+import { Events, Home, NotFound, Login, Register, CreateEvent } from '@/pages';
 import { ErrorBoundary, Loading } from '@/components';
 import { getAllEvents, getHomePageData } from '@/data';
 import { createEventAction, loginAction, registerAction } from '@/actions';
@@ -24,7 +24,7 @@ const router = createBrowserRouter(
           action={createEventAction}
         />
         <Route path='app' element={<ProtectedLayout />}>
-          <Route index element={<div>Hello user!</div>} />
+          <Route index element={<CreateEvent />} />
         </Route>
         <Route path='*' element={<NotFound />} />
       </Route>
