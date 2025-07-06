@@ -32,15 +32,18 @@ const CreateEvent = () => {
       <div>
         <div className='flex justify-between items-center mb-4'>
           <h2>Your Events ({eventsByUser.length})</h2>
-          {hasNextPage && eventsByUser.length ? (
-            <button
-              onClick={loadMoreEvents}
-              disabled={fetcher.state === 'loading'}
-              className='btn btn-primary'
-            >
-              {fetcher.state === 'loading' ? 'Loading...' : 'Load More Events'}
-            </button>
-          ) : null}
+          <div className='flex gap-2'>
+            <button className='btn btn-primary'>Create New Event</button>
+            {hasNextPage && eventsByUser.length ? (
+              <button
+                onClick={loadMoreEvents}
+                disabled={fetcher.state === 'loading'}
+                className='btn btn-secondary'
+              >
+                {fetcher.state === 'loading' ? 'Loading...' : 'Load More Events'}
+              </button>
+            ) : null}
+          </div>
         </div>
         {!eventsByUser.length ? (
           <p>You haven't created any events yet.</p>

@@ -28,9 +28,12 @@ const Home = () => {
               <Link to='/events' className='btn btn-primary btn-lg'>
                 Explore Events
               </Link>
-              <button className='btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-primary'>
+              <Link
+                to='/app'
+                className='btn btn-outline btn-lg text-white border-white hover:bg-white hover:text-primary'
+              >
                 Create Event
-              </button>
+              </Link>
             </div>
           </div>
         </div>
