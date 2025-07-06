@@ -24,7 +24,11 @@ const router = createBrowserRouter(
           action={createEventAction}
         />
         <Route path='app' element={<ProtectedLayout />}>
-          <Route index element={<CreateEvent />} />
+          <Route
+            index
+            element={<CreateEvent />}
+            loader={getAllEvents} /* action={createEventAction}  */
+          />
         </Route>
         <Route path='*' element={<NotFound />} />
       </Route>

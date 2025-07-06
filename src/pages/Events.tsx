@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLoaderData, useFetcher } from 'react-router';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { EventsList, EventsMarkers, Loading, MapBounds, PanOnHover } from '@/components';
+import { EventsList, EventsMarkers, MapBounds, PanOnHover } from '@/components';
 import 'leaflet/dist/leaflet.css';
 
 const Events = () => {
