@@ -12,6 +12,36 @@ You'll see, this app works but since it lacks type annotations, the TypeScript c
 4. Install dependencies and spin up the development server
 5. The app should work!
 
+## Directory and project structure
+
+```bash
+.
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── public
+│   ├── 404.gif
+│   └── icon.ico
+├── README.md
+├── src
+│   ├── actions # Actions for data mutations
+│   ├── App.tsx
+│   ├── components # Reusable components
+│   ├── contexts # Context providers
+│   ├── data # Data layer abstractions for loaders
+│   ├── index.css
+│   ├── layouts # Shared layouts
+│   ├── main.tsx # Entry point
+│   ├── pages # Top-level components as route elements
+│   ├── utils
+│   └── vite-env.d.ts
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
+```
+
 ## Task
 
 Stop the development server and try to build the app with `npm run build` Aaaaaand... it doesn't work 👁️👄👁️
