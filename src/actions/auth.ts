@@ -3,7 +3,7 @@ import z from 'zod/v4';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-export async function loginAction({ request }) {
+export const loginAction = async ({ request }) => {
   try {
     const formData = await request.formData();
     const email = formData.get('email');
@@ -39,9 +39,9 @@ export async function loginAction({ request }) {
       error: error.message
     };
   }
-}
+};
 
-export async function registerAction({ request }) {
+export const registerAction = async ({ request }) => {
   try {
     const formData = await request.formData();
     const name = formData.get('name');
@@ -75,4 +75,4 @@ export async function registerAction({ request }) {
       error: error.message
     };
   }
-}
+};

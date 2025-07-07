@@ -17,18 +17,9 @@ const router = createBrowserRouter(
         <Route index element={<Home />} loader={getHomePageData} />
         <Route path='/login' element={<Login />} action={loginAction} />
         <Route path='/register' element={<Register />} action={registerAction} />
-        <Route
-          path='events'
-          element={<Events />}
-          loader={getAllEvents}
-          action={createEventAction}
-        />
-        <Route path='app' element={<ProtectedLayout />}>
-          <Route
-            index
-            element={<CreateEvent />}
-            loader={getAllEvents} /* action={createEventAction}  */
-          />
+        <Route path='events' element={<Events />} loader={getAllEvents} />
+        <Route path='app' element={<ProtectedLayout />} action={createEventAction}>
+          <Route index element={<CreateEvent />} loader={getAllEvents} />
         </Route>
         <Route path='*' element={<NotFound />} />
       </Route>

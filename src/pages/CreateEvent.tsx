@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLoaderData, useFetcher } from 'react-router';
 import { useAuth } from '@/contexts';
+import { CreateEventModal } from '@/components';
 
 const CreateEvent = () => {
   const initialData = useLoaderData();
@@ -9,6 +10,15 @@ const CreateEvent = () => {
   const [currentPage, setCurrentPage] = useState(initialData.currentPage);
   const [hasNextPage, setHasNextPage] = useState(initialData.hasNextPage);
   const { user } = useAuth();
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    setAllEvents(initialData.results);
+    setCurrentPage(initialData.currentPage);
+    setHasNextPage(initialData.hasNextPage);
+  }, [initialData]);
+
+  const handleCreateEventClick = () => modalRef.current?.showModal();
 
   const loadMoreEvents = useCallback(() => {
     if (fetcher.state === 'loading' || !hasNextPage) return;
@@ -33,7 +43,9 @@ const CreateEvent = () => {
         <div className='flex justify-between items-center mb-4'>
           <h2>Your Events ({eventsByUser.length})</h2>
           <div className='flex gap-2'>
-            <button className='btn btn-primary'>Create New Event</button>
+            <button className='btn btn-primary' onClick={handleCreateEventClick}>
+              Create New Event
+            </button>
             {hasNextPage && eventsByUser.length ? (
               <button
                 onClick={loadMoreEvents}
@@ -66,6 +78,7 @@ const CreateEvent = () => {
           </div>
         )}
       </div>
+      <CreateEventModal modalRef={modalRef} />
     </div>
   );
 };

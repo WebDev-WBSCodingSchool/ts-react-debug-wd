@@ -1,3 +1,4 @@
+export { default as CreateEventModal } from './events/CreateEventModal';
 export { default as ErrorBoundary } from './ui/ErrorBoundary';
 export { default as EventsList } from './map/EventsList';
 export { default as EventsMarkers } from './map/EventsMarkers';
