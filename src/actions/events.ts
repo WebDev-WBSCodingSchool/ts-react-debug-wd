@@ -37,7 +37,6 @@ export const createEventAction = async ({ request }) => {
       longitude: parseFloat(longitude)
     });
     if (!success) throw new Error(z.prettifyError(error));
-    console.log('Creating event with data:', data);
     const organizerId = JSON.parse(localStorage.getItem('user') || '{}').id;
     await fetch(`${API_URL}/events`, {
       method: 'POST',
