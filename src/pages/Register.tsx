@@ -1,8 +1,9 @@
+import { type AuthActionResult, isErrorResult } from '@/types';
 import { Form, useActionData, Link, Navigate } from 'react-router';
 import { useAuth } from '@/contexts';
 
 const Register = () => {
-  const actionData = useActionData();
+  const actionData = useActionData<AuthActionResult>();
   const { isAuthenticated } = useAuth();
 
   if (isAuthenticated) return <Navigate to='/app' replace />;
@@ -13,7 +14,7 @@ const Register = () => {
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>Create your account</h2>
         </div>
-        {actionData?.error && (
+        {isErrorResult(actionData) && (
           <div className='alert alert-error'>
             <span>{actionData.error}</span>
           </div>

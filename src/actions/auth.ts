@@ -1,9 +1,10 @@
-import { redirect } from 'react-router';
+import type { AuthActionResult } from '@/types';
+import { redirect, type ActionFunction } from 'react-router';
 import z from 'zod/v4';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-export const loginAction = async ({ request }) => {
+export const loginAction: ActionFunction = async ({ request }): Promise<AuthActionResult> => {
   try {
     const formData = await request.formData();
     const email = formData.get('email');
@@ -34,14 +35,19 @@ export const loginAction = async ({ request }) => {
       user,
       token
     };
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return {
+        error: error.message
+      };
+    }
     return {
-      error: error.message
+      error: 'Something went very wrong!'
     };
   }
 };
 
-export const registerAction = async ({ request }) => {
+export const registerAction: ActionFunction = async ({ request }): Promise<AuthActionResult> => {
   try {
     const formData = await request.formData();
     const name = formData.get('name');
@@ -70,9 +76,14 @@ export const registerAction = async ({ request }) => {
       throw new Error(error.error || 'Registration failed');
     }
     return redirect('/login');
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return {
+        error: error.message
+      };
+    }
     return {
-      error: error.message
+      error: 'Something went very wrong!'
     };
   }
 };

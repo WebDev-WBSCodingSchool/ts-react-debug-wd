@@ -1,16 +1,17 @@
+import { type AuthActionResult, isErrorResult, isSuccessResult } from '@/types';
 import { useEffect } from 'react';
 import { Form, useActionData, Link, Navigate } from 'react-router';
 import { useAuth } from '@/contexts';
 
 const Login = () => {
-  const actionData = useActionData();
+  const actionData = useActionData<AuthActionResult>();
   const { isAuthenticated, login } = useAuth();
 
   useEffect(() => {
-    if (actionData?.token) {
+    if (isSuccessResult(actionData)) {
       login(actionData?.token);
     }
-  }, [actionData?.token, login]);
+  }, [actionData, login]);
 
   if (isAuthenticated) return <Navigate to='/app' replace />;
 
@@ -20,7 +21,7 @@ const Login = () => {
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>Sign in to your account</h2>
         </div>
-        {actionData?.error && (
+        {isErrorResult(actionData) && (
           <div className='alert alert-error'>
             <span>{actionData.error}</span>
           </div>

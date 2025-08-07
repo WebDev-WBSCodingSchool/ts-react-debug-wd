@@ -1,46 +1,69 @@
+import type { Event, EventsResponse } from '@/types';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useLoaderData, useFetcher } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { EventsList, EventsMarkers, MapBounds, PanOnHover } from '@/components';
+import { getAllEvents } from '@/data';
 import 'leaflet/dist/leaflet.css';
 
 const Events = () => {
-  const initialData = useLoaderData();
-  const fetcher = useFetcher();
-  const [allEvents, setAllEvents] = useState(initialData.results);
-  const [currentPage, setCurrentPage] = useState(initialData.currentPage);
-  const [hasNextPage, setHasNextPage] = useState(initialData.hasNextPage);
-  const [highlightedEvent, setHighlightedEvent] = useState(null);
-  const observerRef = useRef(null);
+  // const initialData = useLoaderData<EventsResponse>();
+  // const fetcher = useFetcher();
+  const [allEvents, setAllEvents] = useState<Event[]>([]);
+  const [currentPage, setCurrentPage] = useState<EventsResponse['currentPage']>(1);
+  const [hasNextPage, setHasNextPage] = useState<EventsResponse['hasNextPage']>();
+  const [highlightedEvent, setHighlightedEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
-  const loadMoreEvents = useCallback(async () => {
-    if (fetcher.state === 'loading' || !hasNextPage) return;
-    fetcher.load(`/events?page=${currentPage + 1}&limit=10`);
-  }, [currentPage, hasNextPage, fetcher]);
-
-  useEffect(() => {
-    if (fetcher.data && fetcher.state === 'idle') {
-      const fetchedData = fetcher.data;
-      setAllEvents((prev) => [...prev, ...fetchedData.results]);
-      setCurrentPage(fetchedData.currentPage);
-      setHasNextPage(fetchedData.hasNextPage);
-    }
-  }, [fetcher.data, fetcher.state]);
+  // const loadMoreEvents = useCallback(async () => {
+  //   if (loading || !hasNextPage) return;
+  //   setSearchParams(`/?page=${currentPage + 1}&limit=10`);
+  // }, [currentPage, hasNextPage, loading, setSearchParams]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMoreEvents();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-    return () => observer.disconnect();
-  }, [loadMoreEvents]);
+    const loadEvents = async () => {
+      try {
+        setLoading(true);
+        const { currentPage, hasNextPage, results } = await getAllEvents();
+
+        setAllEvents(results);
+        setCurrentPage(currentPage);
+        setHasNextPage(hasNextPage);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEvents();
+  }, []);
+
+  // useEffect(() => {
+
+  //   if (fetcher.data && fetcher.state === 'idle') {
+  //     const fetchedData = fetcher.data as EventsResponse;
+  //     setAllEvents((prev) => [...prev, ...fetchedData.results]);
+  //     setCurrentPage(fetchedData.currentPage);
+  //     setHasNextPage(fetchedData.hasNextPage);
+  //   }
+  // }, [fetcher.data, fetcher.state]);
+
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       if (entries[0].isIntersecting) {
+  //         loadMoreEvents();
+  //       }
+  //     },
+  //     { threshold: 0.1 }
+  //   );
+  //   if (observerRef.current) {
+  //     observer.observe(observerRef.current);
+  //   }
+  //   return () => observer.disconnect();
+  // }, [loadMoreEvents]);
 
   return (
     <>
@@ -52,7 +75,7 @@ const Events = () => {
             <EventsList events={allEvents} setHighlightedEvent={setHighlightedEvent} />
             <div ref={observerRef} className='h-4'></div>
           </div>
-          {fetcher.state === 'loading' && (
+          {loading && (
             <div className='w-full flex items-center justify-center'>
               <span className='loading loading-ring loading-xl text-primary'></span>
             </div>

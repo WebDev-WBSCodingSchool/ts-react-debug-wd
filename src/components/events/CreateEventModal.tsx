@@ -1,9 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { isErrorResult, isSuccessResult, type CreateActionResult } from '@/types';
+import { useEffect, useRef, type RefObject } from 'react';
 import { useFetcher } from 'react-router';
 
-export default function CreateEventModal({ modalRef }) {
-  const fetcher = useFetcher();
-  const formRef = useRef(null);
+export default function CreateEventModal({
+  modalRef
+}: {
+  modalRef: RefObject<HTMLDialogElement | null>;
+}) {
+  const fetcher = useFetcher<CreateActionResult>();
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const cleanUp = () => {
     formRef.current?.reset();
@@ -11,7 +16,7 @@ export default function CreateEventModal({ modalRef }) {
   };
 
   useEffect(() => {
-    if (fetcher.data?.success) {
+    if (isSuccessResult(fetcher.data)) {
       cleanUp();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -21,7 +26,7 @@ export default function CreateEventModal({ modalRef }) {
     <dialog ref={modalRef} className='modal' onClose={cleanUp}>
       <div className='modal-box w-full max-w-2xl'>
         <h3 className='font-bold text-xl lg:text-2xl mb-6'>Create New Event</h3>
-        {fetcher.data?.error && (
+        {isErrorResult(fetcher.data) && (
           <div className='alert alert-error'>
             <span>{fetcher.data.error}</span>
           </div>

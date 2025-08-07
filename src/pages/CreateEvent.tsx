@@ -1,16 +1,17 @@
+import type { EventsResponse } from '@/types';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLoaderData, useFetcher } from 'react-router';
 import { useAuth } from '@/contexts';
 import { CreateEventModal } from '@/components';
 
 const CreateEvent = () => {
-  const initialData = useLoaderData();
+  const initialData = useLoaderData<EventsResponse>();
   const fetcher = useFetcher();
   const [allEvents, setAllEvents] = useState(initialData.results);
   const [currentPage, setCurrentPage] = useState(initialData.currentPage);
   const [hasNextPage, setHasNextPage] = useState(initialData.hasNextPage);
   const { user } = useAuth();
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
     setAllEvents(initialData.results);
@@ -27,7 +28,7 @@ const CreateEvent = () => {
 
   useEffect(() => {
     if (fetcher.data && fetcher.state === 'idle') {
-      const fetchedData = fetcher.data;
+      const fetchedData = fetcher.data as EventsResponse;
       setAllEvents((prev) => [...prev, ...fetchedData.results]);
       setCurrentPage(fetchedData.currentPage);
       setHasNextPage(fetchedData.hasNextPage);

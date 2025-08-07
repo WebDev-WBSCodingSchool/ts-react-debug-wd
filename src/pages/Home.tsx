@@ -1,8 +1,26 @@
-import { Link, useLoaderData } from 'react-router';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router';
+import { getHomePageData } from '@/data';
 import { FaCalendarAlt, FaUsers, FaMapMarkerAlt, FaShare } from 'react-icons/fa';
 
 const Home = () => {
-  const { userCount, eventsCount } = useLoaderData();
+  const [count, setCount] = useState<{ userCount: number; eventsCount: number }>({
+    userCount: 0,
+    eventsCount: 0
+  });
+
+  useEffect(() => {
+    const getAndSetData = async () => {
+      try {
+        const countsData = await getHomePageData();
+        setCount(countsData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getAndSetData();
+  }, []);
 
   return (
     <div className='min-h-screen bg-base-100'>
@@ -86,14 +104,14 @@ const Home = () => {
                 <FaCalendarAlt className='text-3xl' />
               </div>
               <div className='stat-title'>Events Created</div>
-              <div className='stat-value text-primary'>{eventsCount}</div>
+              <div className='stat-value text-primary'>{count.eventsCount}</div>
             </div>
             <div className='stat'>
               <div className='stat-figure text-secondary'>
                 <FaUsers className='text-3xl' />
               </div>
               <div className='stat-title'>Active Users</div>
-              <div className='stat-value text-secondary'>{userCount}</div>
+              <div className='stat-value text-secondary'>{count.userCount}</div>
             </div>
           </div>
         </div>
