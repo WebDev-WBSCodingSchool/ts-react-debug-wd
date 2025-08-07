@@ -1,69 +1,90 @@
 import type { Event, EventsResponse } from '@/types';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useSearchParams } from 'react-router';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { EventsList, EventsMarkers, MapBounds, PanOnHover } from '@/components';
 import { getAllEvents } from '@/data';
 import 'leaflet/dist/leaflet.css';
 
 const Events = () => {
-  // const initialData = useLoaderData<EventsResponse>();
-  // const fetcher = useFetcher();
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [currentPage, setCurrentPage] = useState<EventsResponse['currentPage']>(1);
   const [hasNextPage, setHasNextPage] = useState<EventsResponse['hasNextPage']>();
   const [highlightedEvent, setHighlightedEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [refreshEvents, setRefreshEvents] = useState(false);
   const observerRef = useRef<HTMLDivElement | null>(null);
 
-  // const loadMoreEvents = useCallback(async () => {
-  //   if (loading || !hasNextPage) return;
-  //   setSearchParams(`/?page=${currentPage + 1}&limit=10`);
-  // }, [currentPage, hasNextPage, loading, setSearchParams]);
-
   useEffect(() => {
-    const loadEvents = async () => {
+    let ignore = false;
+    const loadInitialEvents = async () => {
       try {
         setLoading(true);
-        const { currentPage, hasNextPage, results } = await getAllEvents();
 
-        setAllEvents(results);
-        setCurrentPage(currentPage);
-        setHasNextPage(hasNextPage);
+        const { currentPage, hasNextPage, results } = await getAllEvents();
+        if (!ignore) {
+          setAllEvents(results);
+          setCurrentPage(currentPage);
+          setHasNextPage(hasNextPage);
+        }
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
+        setRefreshEvents(false);
       }
     };
-    loadEvents();
+    loadInitialEvents();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
-  // useEffect(() => {
+  useEffect(() => {
+    let ignore = false;
+    const loadEvents = async () => {
+      try {
+        setLoading(true);
+        const searchParams = `?page=${currentPage}&limit=10`;
+        const { currentPage: currPage, hasNextPage, results } = await getAllEvents(searchParams);
+        if (!ignore) {
+          setAllEvents((prev) => [...prev, ...results]);
+          setCurrentPage(currPage);
+          setHasNextPage(hasNextPage);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+        setRefreshEvents(false);
+      }
+    };
+    if (refreshEvents) loadEvents();
+    return () => {
+      ignore = true;
+    };
+  }, [refreshEvents, currentPage]);
 
-  //   if (fetcher.data && fetcher.state === 'idle') {
-  //     const fetchedData = fetcher.data as EventsResponse;
-  //     setAllEvents((prev) => [...prev, ...fetchedData.results]);
-  //     setCurrentPage(fetchedData.currentPage);
-  //     setHasNextPage(fetchedData.hasNextPage);
-  //   }
-  // }, [fetcher.data, fetcher.state]);
+  const loadMoreEvents = useCallback(async () => {
+    if (loading || !hasNextPage) return;
 
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       if (entries[0].isIntersecting) {
-  //         loadMoreEvents();
-  //       }
-  //     },
-  //     { threshold: 0.1 }
-  //   );
-  //   if (observerRef.current) {
-  //     observer.observe(observerRef.current);
-  //   }
-  //   return () => observer.disconnect();
-  // }, [loadMoreEvents]);
+    setCurrentPage((prev) => prev + 1);
+    setRefreshEvents(true);
+  }, [hasNextPage, setCurrentPage, loading]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreEvents();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+    return () => observer.disconnect();
+  }, [loadMoreEvents]);
 
   return (
     <>

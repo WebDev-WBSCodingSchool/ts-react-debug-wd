@@ -1,11 +1,17 @@
 import { type AuthActionResult, isErrorResult, isSuccessResult } from '@/types';
-import { useEffect } from 'react';
-import { Form, useActionData, Link, Navigate } from 'react-router';
+import { useActionState, useEffect, useState, type ChangeEvent } from 'react';
+import { Link, Navigate } from 'react-router';
 import { useAuth } from '@/contexts';
+import { loginAction } from '@/actions';
 
 const Login = () => {
-  const actionData = useActionData<AuthActionResult>();
+  const [actionData, submitAction, isPending] = useActionState(loginAction, {} as AuthActionResult);
+  const [form, setForm] = useState({ email: '', password: '' });
   const { isAuthenticated, login } = useAuth();
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   useEffect(() => {
     if (isSuccessResult(actionData)) {
@@ -26,13 +32,15 @@ const Login = () => {
             <span>{actionData.error}</span>
           </div>
         )}
-        <Form method='post' className='space-y-4'>
+        <form action={submitAction} className='space-y-4'>
           <div className='form-control'>
             <label htmlFor='email' className='label'>
               <span className='label-text'>Email address</span>
             </label>
             <input
               name='email'
+              onChange={handleChange}
+              value={form.email}
               required
               placeholder='Enter your email'
               className='input input-bordered w-full'
@@ -44,13 +52,15 @@ const Login = () => {
             </label>
             <input
               name='password'
+              onChange={handleChange}
+              value={form.password}
               type='password'
               placeholder='Enter your password'
               className='input input-bordered w-full'
             />
           </div>
           <div className='form-control'>
-            <button type='submit' className='btn btn-primary w-full'>
+            <button disabled={isPending} type='submit' className='btn btn-primary w-full'>
               Sign in
             </button>
           </div>
@@ -59,7 +69,7 @@ const Login = () => {
               Don’t have an account? Sign up
             </Link>
           </div>
-        </Form>
+        </form>
       </div>
     </div>
   );

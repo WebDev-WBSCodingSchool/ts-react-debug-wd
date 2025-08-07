@@ -1,12 +1,14 @@
 import type { AuthActionResult } from '@/types';
-import { redirect, type ActionFunction } from 'react-router';
+import { redirect } from 'react-router';
 import z from 'zod/v4';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-export const loginAction: ActionFunction = async ({ request }): Promise<AuthActionResult> => {
+export const loginAction = async (
+  _: AuthActionResult,
+  formData: FormData
+): Promise<AuthActionResult> => {
   try {
-    const formData = await request.formData();
     const email = formData.get('email');
     const password = formData.get('password');
     const loginSchema = z.object({
@@ -47,9 +49,11 @@ export const loginAction: ActionFunction = async ({ request }): Promise<AuthActi
   }
 };
 
-export const registerAction: ActionFunction = async ({ request }): Promise<AuthActionResult> => {
+export const registerAction = async (
+  _: AuthActionResult,
+  formData: FormData
+): Promise<AuthActionResult> => {
   try {
-    const formData = await request.formData();
     const name = formData.get('name');
     const email = formData.get('email');
     const password = formData.get('password');

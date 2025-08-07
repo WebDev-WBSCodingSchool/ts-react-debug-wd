@@ -1,14 +1,17 @@
 import type { CreateActionResult } from '@/types';
-import { type ActionFunction } from 'react-router';
 import z from 'zod/v4';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-export const createEventAction: ActionFunction = async ({
-  request
-}): Promise<CreateActionResult> => {
+export const createEventAction = async (
+  _: CreateActionResult,
+  formData: FormData | null
+): Promise<CreateActionResult> => {
   try {
-    const formData = await request.formData();
+    if (formData === null) {
+      return { success: true, message: 'Event cancelled' };
+    }
+
     const title = formData.get('title');
     const description = formData.get('description');
     const date = formData.get('date');

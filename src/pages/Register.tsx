@@ -1,10 +1,20 @@
+import { useActionState, useState, type ChangeEvent } from 'react';
 import { type AuthActionResult, isErrorResult } from '@/types';
-import { Form, useActionData, Link, Navigate } from 'react-router';
+import { Link, Navigate } from 'react-router';
 import { useAuth } from '@/contexts';
+import { registerAction } from '@/actions';
 
 const Register = () => {
-  const actionData = useActionData<AuthActionResult>();
+  const [actionData, submitAction, isPending] = useActionState(
+    registerAction,
+    {} as AuthActionResult
+  );
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const { isAuthenticated } = useAuth();
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   if (isAuthenticated) return <Navigate to='/app' replace />;
 
@@ -19,13 +29,15 @@ const Register = () => {
             <span>{actionData.error}</span>
           </div>
         )}
-        <Form method='post' className='space-y-4'>
+        <form action={submitAction} className='space-y-4'>
           <div className='form-control'>
             <label htmlFor='email' className='label'>
               <span className='label-text'>Name</span>
             </label>
             <input
               name='name'
+              onChange={handleChange}
+              value={form.name}
               placeholder='Enter your name'
               className='input input-bordered w-full'
             />
@@ -36,6 +48,8 @@ const Register = () => {
             </label>
             <input
               name='email'
+              onChange={handleChange}
+              value={form.email}
               placeholder='Enter your email'
               className='input input-bordered w-full'
             />
@@ -46,13 +60,15 @@ const Register = () => {
             </label>
             <input
               name='password'
+              onChange={handleChange}
+              value={form.password}
               type='password'
               placeholder='Enter your password'
               className='input input-bordered w-full'
             />
           </div>
           <div className='form-control'>
-            <button type='submit' className='btn btn-primary w-full'>
+            <button type='submit' disabled={isPending} className='btn btn-primary w-full'>
               Sign up
             </button>
           </div>
@@ -61,7 +77,7 @@ const Register = () => {
               Already have an account? Sign in
             </Link>
           </div>
-        </Form>
+        </form>
       </div>
     </div>
   );
