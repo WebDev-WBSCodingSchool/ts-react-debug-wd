@@ -76,7 +76,7 @@ export const isErrorResult = (data: AuthActionResult | CreateActionResult): data
 
 export const isSuccessResult = (
   data: AuthActionResult | CreateActionResult
-): data is AuthSuccessResult => {
+): data is AuthSuccessResult | CreateEventSuccessResult => {
   return typeof data === 'object' && data !== null && 'success' in data && data.success === true;
 };
 

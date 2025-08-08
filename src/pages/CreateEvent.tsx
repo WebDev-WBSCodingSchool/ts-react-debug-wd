@@ -10,6 +10,7 @@ const CreateEvent = () => {
   const [hasNextPage, setHasNextPage] = useState<EventsResponse['hasNextPage']>();
   const [loading, setLoading] = useState(false);
   const [refreshEvents, setRefreshEvents] = useState(false);
+  const [isNewEvent, setIsNewEvent] = useState(false);
 
   const { user } = useAuth();
   const modalRef = useRef<HTMLDialogElement | null>(null);
@@ -47,22 +48,27 @@ const CreateEvent = () => {
         const searchParams = `?page=${currentPage}&limit=10`;
         const { currentPage: currPage, hasNextPage, results } = await getAllEvents(searchParams);
         if (!ignore) {
-          setAllEvents((prev) => [...prev, ...results]);
           setCurrentPage(currPage);
           setHasNextPage(hasNextPage);
+          if (isNewEvent) {
+            setAllEvents(results);
+          } else {
+            setAllEvents((prev) => [...prev, ...results]);
+          }
         }
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
         setRefreshEvents(false);
+        setIsNewEvent(false);
       }
     };
     if (refreshEvents) loadEvents();
     return () => {
       ignore = true;
     };
-  }, [refreshEvents, currentPage]);
+  }, [refreshEvents, currentPage, isNewEvent]);
 
   const loadMoreEvents = useCallback(async () => {
     if (loading || !hasNextPage) return;
@@ -74,6 +80,7 @@ const CreateEvent = () => {
   const refreshForNewEvent = () => {
     setCurrentPage(1);
     setRefreshEvents(true);
+    setIsNewEvent(true);
   };
 
   const handleCreateEventClick = () => modalRef.current?.showModal();
