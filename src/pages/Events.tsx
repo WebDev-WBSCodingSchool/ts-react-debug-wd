@@ -1,31 +1,55 @@
+import type { Event, EventsResponse } from '@/types';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useLoaderData, useFetcher } from 'react-router';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { EventsList, EventsMarkers, MapBounds, PanOnHover } from '@/components';
+import { getAllEvents } from '@/data';
 import 'leaflet/dist/leaflet.css';
 
 const Events = () => {
-  const initialData = useLoaderData();
-  const fetcher = useFetcher();
-  const [allEvents, setAllEvents] = useState(initialData.results);
-  const [currentPage, setCurrentPage] = useState(initialData.currentPage);
-  const [hasNextPage, setHasNextPage] = useState(initialData.hasNextPage);
-  const [highlightedEvent, setHighlightedEvent] = useState(null);
-  const observerRef = useRef(null);
-
-  const loadMoreEvents = useCallback(async () => {
-    if (fetcher.state === 'loading' || !hasNextPage) return;
-    fetcher.load(`/events?page=${currentPage + 1}&limit=10`);
-  }, [currentPage, hasNextPage, fetcher]);
+  const [allEvents, setAllEvents] = useState<Event[]>([]);
+  const [currentPage, setCurrentPage] = useState<EventsResponse['currentPage']>(1);
+  const [hasNextPage, setHasNextPage] = useState<EventsResponse['hasNextPage']>();
+  const [highlightedEvent, setHighlightedEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [refreshEvents, setRefreshEvents] = useState(true);
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (fetcher.data && fetcher.state === 'idle') {
-      const fetchedData = fetcher.data;
-      setAllEvents((prev) => [...prev, ...fetchedData.results]);
-      setCurrentPage(fetchedData.currentPage);
-      setHasNextPage(fetchedData.hasNextPage);
-    }
-  }, [fetcher.data, fetcher.state]);
+    let ignore = false;
+    const loadEvents = async () => {
+      try {
+        setLoading(true);
+        let result;
+        if (currentPage <= 1) {
+          result = await getAllEvents();
+        } else {
+          const searchParams = `?page=${currentPage}&limit=10`;
+          result = await getAllEvents(searchParams);
+        }
+        if (!ignore) {
+          const { currentPage: currPage, hasNextPage, results } = result;
+          setAllEvents((prev) => [...prev, ...results]);
+          setCurrentPage(currPage);
+          setHasNextPage(hasNextPage);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+        setRefreshEvents(false);
+      }
+    };
+    if (refreshEvents) loadEvents();
+    return () => {
+      ignore = true;
+    };
+  }, [refreshEvents, currentPage]);
+
+  const loadMoreEvents = useCallback(() => {
+    if (loading || !hasNextPage) return;
+    setCurrentPage((prev) => prev + 1);
+    setRefreshEvents(true);
+  }, [hasNextPage, setCurrentPage, loading]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -52,7 +76,7 @@ const Events = () => {
             <EventsList events={allEvents} setHighlightedEvent={setHighlightedEvent} />
             <div ref={observerRef} className='h-4'></div>
           </div>
-          {fetcher.state === 'loading' && (
+          {loading && (
             <div className='w-full flex items-center justify-center'>
               <span className='loading loading-ring loading-xl text-primary'></span>
             </div>

@@ -1,38 +1,80 @@
-import { useEffect, useRef } from 'react';
-import { useFetcher } from 'react-router';
+import {
+  useActionState,
+  useState,
+  useEffect,
+  useRef,
+  startTransition,
+  type RefObject,
+  type ChangeEvent
+} from 'react';
+import { isErrorResult, isSuccessResult, type CreateActionResult } from '@/types';
+import { createEventAction } from '@/actions';
 
-export default function CreateEventModal({ modalRef }) {
-  const fetcher = useFetcher();
-  const formRef = useRef(null);
+export default function CreateEventModal({
+  refreshForNewEvent,
+  modalRef
+}: {
+  refreshForNewEvent: () => void;
+  modalRef: RefObject<HTMLDialogElement | null>;
+}) {
+  const [actionData, submitAction, isPending] = useActionState(
+    createEventAction,
+    {} as CreateActionResult
+  );
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    date: '',
+    location: '',
+    latitude: '',
+    longitude: ''
+  });
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const cleanUp = () => {
-    formRef.current?.reset();
+    setForm({
+      title: '',
+      description: '',
+      date: '',
+      location: '',
+      latitude: '',
+      longitude: ''
+    });
     modalRef?.current?.close();
   };
 
   useEffect(() => {
-    if (fetcher.data?.success) {
+    if (isSuccessResult(actionData)) {
       cleanUp();
+
+      // TODO: fix error so it only refreshes if you didn't cancel
+      if (actionData?.message !== 'Event cancelled') refreshForNewEvent();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetcher.data]);
+  }, [actionData]);
 
   return (
     <dialog ref={modalRef} className='modal' onClose={cleanUp}>
       <div className='modal-box w-full max-w-2xl'>
         <h3 className='font-bold text-xl lg:text-2xl mb-6'>Create New Event</h3>
-        {fetcher.data?.error && (
+        {isErrorResult(actionData) && (
           <div className='alert alert-error'>
-            <span>{fetcher.data.error}</span>
+            <span>{actionData.error}</span>
           </div>
         )}
-        <fetcher.Form method='post' action='/app' className='space-y-6' ref={formRef}>
+        <form action={submitAction} className='space-y-6' ref={formRef}>
           <div className='form-control'>
             <label className='label' htmlFor='title'>
               <span className='label-text'>Event Title</span>
             </label>
             <input
               name='title'
+              onChange={handleChange}
+              value={form.title}
               type='text'
               placeholder='Summer Gala 2025'
               className='input input-bordered w-full'
@@ -44,6 +86,8 @@ export default function CreateEventModal({ modalRef }) {
             </label>
             <textarea
               name='description'
+              onChange={handleChange}
+              value={form.description}
               placeholder="Give attendees a taste of what's coming…"
               className='textarea textarea-bordered h-28 resize-none w-full'
             />
@@ -60,6 +104,8 @@ export default function CreateEventModal({ modalRef }) {
             </label>
             <input
               name='location'
+              onChange={handleChange}
+              value={form.location}
               type='text'
               placeholder='Berlin Congress Center'
               className='input input-bordered w-full'
@@ -72,6 +118,8 @@ export default function CreateEventModal({ modalRef }) {
               </label>
               <input
                 name='latitude'
+                onChange={handleChange}
+                value={form.latitude}
                 type='number'
                 step='any'
                 placeholder='52.5200'
@@ -84,6 +132,8 @@ export default function CreateEventModal({ modalRef }) {
               </label>
               <input
                 name='longitude'
+                onChange={handleChange}
+                value={form.longitude}
                 type='number'
                 step='any'
                 placeholder='13.4050'
@@ -92,14 +142,18 @@ export default function CreateEventModal({ modalRef }) {
             </div>
           </div>
           <div className='modal-action mt-8'>
-            <button type='button' className='btn btn-ghost' onClick={cleanUp}>
+            <button
+              type='button'
+              className='btn btn-ghost'
+              onClick={() => startTransition(() => submitAction(null))}
+            >
               Cancel
             </button>
-            <button type='submit' className='btn btn-primary' disabled={fetcher.state !== 'idle'}>
+            <button type='submit' className='btn btn-primary' disabled={isPending}>
               Create Event
             </button>
           </div>
-        </fetcher.Form>
+        </form>
       </div>
       <form method='dialog' className='modal-backdrop'>
         <button aria-label='Close modal'>close</button>

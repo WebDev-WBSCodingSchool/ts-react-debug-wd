@@ -1,11 +1,13 @@
-import { redirect } from 'react-router';
+import type { AuthActionResult } from '@/types';
 import z from 'zod/v4';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-export const loginAction = async ({ request }) => {
+export const loginAction = async (
+  _: AuthActionResult,
+  formData: FormData
+): Promise<AuthActionResult> => {
   try {
-    const formData = await request.formData();
     const email = formData.get('email');
     const password = formData.get('password');
     const loginSchema = z.object({
@@ -34,16 +36,23 @@ export const loginAction = async ({ request }) => {
       user,
       token
     };
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return {
+        error: error.message
+      };
+    }
     return {
-      error: error.message
+      error: 'Something went very wrong!'
     };
   }
 };
 
-export const registerAction = async ({ request }) => {
+export const registerAction = async (
+  _: AuthActionResult,
+  formData: FormData
+): Promise<AuthActionResult> => {
   try {
-    const formData = await request.formData();
     const name = formData.get('name');
     const email = formData.get('email');
     const password = formData.get('password');
@@ -69,10 +78,17 @@ export const registerAction = async ({ request }) => {
       const error = await response.json();
       throw new Error(error.error || 'Registration failed');
     }
-    return redirect('/login');
-  } catch (error) {
     return {
-      error: error.message
+      success: true
+    };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return {
+        error: error.message
+      };
+    }
+    return {
+      error: 'Something went very wrong!'
     };
   }
 };

@@ -1,10 +1,17 @@
+import type { CreateActionResult } from '@/types';
 import z from 'zod/v4';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-export const createEventAction = async ({ request }) => {
+export const createEventAction = async (
+  _: CreateActionResult,
+  formData: FormData | null
+): Promise<CreateActionResult> => {
   try {
-    const formData = await request.formData();
+    if (formData === null) {
+      return { success: true, message: 'Event cancelled' };
+    }
+
     const title = formData.get('title');
     const description = formData.get('description');
     const date = formData.get('date');
@@ -33,8 +40,8 @@ export const createEventAction = async ({ request }) => {
       description,
       date,
       location,
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude)
+      latitude,
+      longitude
     });
     if (!success) throw new Error(z.prettifyError(error));
     const organizerId = JSON.parse(localStorage.getItem('user') || '{}').id;
@@ -47,7 +54,14 @@ export const createEventAction = async ({ request }) => {
       }
     });
     return { success: true, message: 'Event created successfully' };
-  } catch (error) {
-    return { error: error.message };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return {
+        error: error.message
+      };
+    }
+    return {
+      error: 'Something went very wrong!'
+    };
   }
 };

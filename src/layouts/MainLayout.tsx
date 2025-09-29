@@ -3,7 +3,7 @@ import { Outlet } from 'react-router';
 import { NavBar, SideBar, Footer } from '@/components';
 
 const MainLayout = () => {
-  const drawerRef = useRef(null);
+  const drawerRef = useRef<HTMLInputElement | null>(null);
 
   return (
     <div className='drawer bg-base-200'>
@@ -19,4 +19,5 @@ const MainLayout = () => {
     </div>
   );
 };
+
 export default MainLayout;
