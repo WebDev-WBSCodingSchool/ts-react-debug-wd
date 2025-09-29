@@ -1,5 +1,4 @@
 import type { AuthActionResult } from '@/types';
-import { redirect } from 'react-router';
 import z from 'zod/v4';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
@@ -79,7 +78,9 @@ export const registerAction = async (
       const error = await response.json();
       throw new Error(error.error || 'Registration failed');
     }
-    return redirect('/login');
+    return {
+      success: true
+    };
   } catch (error: unknown) {
     if (error instanceof Error) {
       return {

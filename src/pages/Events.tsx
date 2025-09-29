@@ -11,42 +11,23 @@ const Events = () => {
   const [hasNextPage, setHasNextPage] = useState<EventsResponse['hasNextPage']>();
   const [highlightedEvent, setHighlightedEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(false);
-  const [refreshEvents, setRefreshEvents] = useState(false);
+  const [refreshEvents, setRefreshEvents] = useState(true);
   const observerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    let ignore = false;
-    const loadInitialEvents = async () => {
-      try {
-        setLoading(true);
-
-        const { currentPage, hasNextPage, results } = await getAllEvents();
-        if (!ignore) {
-          setAllEvents(results);
-          setCurrentPage(currentPage);
-          setHasNextPage(hasNextPage);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-        setRefreshEvents(false);
-      }
-    };
-    loadInitialEvents();
-    return () => {
-      ignore = true;
-    };
-  }, []);
 
   useEffect(() => {
     let ignore = false;
     const loadEvents = async () => {
       try {
         setLoading(true);
-        const searchParams = `?page=${currentPage}&limit=10`;
-        const { currentPage: currPage, hasNextPage, results } = await getAllEvents(searchParams);
+        let result;
+        if (currentPage <= 1) {
+          result = await getAllEvents();
+        } else {
+          const searchParams = `?page=${currentPage}&limit=10`;
+          result = await getAllEvents(searchParams);
+        }
         if (!ignore) {
+          const { currentPage: currPage, hasNextPage, results } = result;
           setAllEvents((prev) => [...prev, ...results]);
           setCurrentPage(currPage);
           setHasNextPage(hasNextPage);
@@ -64,9 +45,8 @@ const Events = () => {
     };
   }, [refreshEvents, currentPage]);
 
-  const loadMoreEvents = useCallback(async () => {
+  const loadMoreEvents = useCallback(() => {
     if (loading || !hasNextPage) return;
-
     setCurrentPage((prev) => prev + 1);
     setRefreshEvents(true);
   }, [hasNextPage, setCurrentPage, loading]);

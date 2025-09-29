@@ -50,35 +50,26 @@ export type UsersResponse = PaginatedResponse<User>;
 export type EventsResponse = PaginatedResponse<Event>;
 
 // API (Mutations)
-export type ActionError = {
-  error: string;
-};
+// Base result types
+export type ActionError = { error: string | null };
+export type ActionSuccess<T> = { success: true } & T;
 
-export type ActionSuccess<T = unknown> = {
-  success: true;
-} & T;
+// Generic union for "something succeeded or failed"
+export type ActionResult<T> = ActionSuccess<T> | ActionError | Response;
 
-export type AuthSuccessResult = ActionSuccess<{
-  user: AuthUser;
-  token: string;
-}>;
+// Concrete payloads
+export type AuthPayload = { user?: AuthUser; token?: string };
+export type EventPayload = { message: string };
 
-export type CreateEventSuccessResult = ActionSuccess<{
-  message: string;
-}>;
+// Typed results
+export type AuthActionResult = ActionResult<AuthPayload>;
+export type CreateActionResult = ActionResult<EventPayload>;
 
-export type AuthActionResult = AuthSuccessResult | ActionError | Response | undefined;
-export type CreateActionResult = CreateEventSuccessResult | ActionError | Response | undefined;
+export const isErrorResult = (data: unknown): data is ActionError =>
+  !!data && typeof data === 'object' && 'error' in data && typeof data.error === 'string';
 
-export const isErrorResult = (data: AuthActionResult | CreateActionResult): data is ActionError => {
-  return typeof data === 'object' && data !== null && 'error' in data;
-};
-
-export const isSuccessResult = (
-  data: AuthActionResult | CreateActionResult
-): data is AuthSuccessResult | CreateEventSuccessResult => {
-  return typeof data === 'object' && data !== null && 'success' in data && data.success === true;
-};
+export const isSuccessResult = <T>(data: unknown): data is ActionSuccess<T> =>
+  !!data && typeof data === 'object' && 'success' in data;
 
 // A bit more refined
 /* 

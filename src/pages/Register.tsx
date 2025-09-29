@@ -1,10 +1,11 @@
-import { useActionState, useState, type ChangeEvent } from 'react';
-import { type AuthActionResult, isErrorResult } from '@/types';
-import { Link, Navigate } from 'react-router';
+import { useActionState, useEffect, useState, type ChangeEvent } from 'react';
+import { type AuthActionResult, isErrorResult, isSuccessResult } from '@/types';
+import { Link, Navigate, useNavigate } from 'react-router';
 import { useAuth } from '@/contexts';
 import { registerAction } from '@/actions';
 
 const Register = () => {
+  const navigate = useNavigate();
   const [actionData, submitAction, isPending] = useActionState(
     registerAction,
     {} as AuthActionResult
@@ -15,6 +16,14 @@ const Register = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+  useEffect(() => {
+    if (isSuccessResult(actionData)) {
+      navigate('/login', {
+        replace: true
+      });
+    }
+  }, [actionData, navigate]);
 
   if (isAuthenticated) return <Navigate to='/app' replace />;
 
