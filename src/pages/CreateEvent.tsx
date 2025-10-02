@@ -1,19 +1,18 @@
-import type { Event, EventsResponse } from '@/types';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts';
 import { CreateEventModal } from '@/components';
 import { getAllEvents } from '@/data';
 
 const CreateEvent = () => {
-  const [allEvents, setAllEvents] = useState<Event[]>([]);
-  const [currentPage, setCurrentPage] = useState<EventsResponse['currentPage']>(1);
-  const [hasNextPage, setHasNextPage] = useState<EventsResponse['hasNextPage']>();
+  const [allEvents, setAllEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState();
   const [loading, setLoading] = useState(false);
   const [refreshEvents, setRefreshEvents] = useState(false);
   const [isNewEvent, setIsNewEvent] = useState(false);
 
   const { user } = useAuth();
-  const modalRef = useRef<HTMLDialogElement | null>(null);
+  const modalRef = useRef(null);
 
   useEffect(() => {
     let ignore = false;

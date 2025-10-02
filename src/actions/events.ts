@@ -1,12 +1,8 @@
-import type { CreateActionResult } from '@/types';
 import z from 'zod/v4';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-export const createEventAction = async (
-  _: CreateActionResult,
-  formData: FormData | null
-): Promise<CreateActionResult> => {
+export const createEventAction = async (_, formData) => {
   try {
     if (formData === null) {
       return { success: true, message: 'Event cancelled' };

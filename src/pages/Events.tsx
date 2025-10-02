@@ -1,4 +1,3 @@
-import type { Event, EventsResponse } from '@/types';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { EventsList, EventsMarkers, MapBounds, PanOnHover } from '@/components';
@@ -6,13 +5,13 @@ import { getAllEvents } from '@/data';
 import 'leaflet/dist/leaflet.css';
 
 const Events = () => {
-  const [allEvents, setAllEvents] = useState<Event[]>([]);
-  const [currentPage, setCurrentPage] = useState<EventsResponse['currentPage']>(1);
-  const [hasNextPage, setHasNextPage] = useState<EventsResponse['hasNextPage']>();
-  const [highlightedEvent, setHighlightedEvent] = useState<Event | null>(null);
+  const [allEvents, setAllEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState();
+  const [highlightedEvent, setHighlightedEvent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshEvents, setRefreshEvents] = useState(true);
-  const observerRef = useRef<HTMLDivElement | null>(null);
+  const observerRef = useRef(null);
 
   useEffect(() => {
     let ignore = false;

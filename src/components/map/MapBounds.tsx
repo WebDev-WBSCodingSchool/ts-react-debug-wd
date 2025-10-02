@@ -1,9 +1,8 @@
-import type { Event } from '@/types';
 import type { LatLngTuple } from 'leaflet';
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 
-const MapBounds = ({ events }: { events: Event[] }) => {
+const MapBounds = ({ events }) => {
   const map = useMap();
 
   useEffect(() => {

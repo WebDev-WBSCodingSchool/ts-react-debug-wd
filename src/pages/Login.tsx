@@ -1,11 +1,10 @@
-import { type AuthActionResult, isErrorResult, isSuccessResult } from '@/types';
 import { useActionState, useEffect, useState, type ChangeEvent } from 'react';
 import { Link, Navigate } from 'react-router';
 import { useAuth } from '@/contexts';
 import { loginAction } from '@/actions';
 
 const Login = () => {
-  const [actionData, submitAction, isPending] = useActionState(loginAction, {} as AuthActionResult);
+  const [actionData, submitAction, isPending] = useActionState(loginAction, {});
   const [form, setForm] = useState({ email: '', password: '' });
   const { isAuthenticated, login } = useAuth();
 
@@ -14,7 +13,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (isSuccessResult(actionData)) {
+    if (actionData.success) {
       login(actionData?.token);
     }
   }, [actionData, login]);
@@ -27,7 +26,7 @@ const Login = () => {
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>Sign in to your account</h2>
         </div>
-        {isErrorResult(actionData) && (
+        {actionData.error && (
           <div className='alert alert-error'>
             <span>{actionData.error}</span>
           </div>

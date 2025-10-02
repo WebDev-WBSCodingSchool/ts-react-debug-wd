@@ -1,12 +1,8 @@
-import type { AuthActionResult } from '@/types';
 import z from 'zod/v4';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-export const loginAction = async (
-  _: AuthActionResult,
-  formData: FormData
-): Promise<AuthActionResult> => {
+export const loginAction = async (_, formData) => {
   try {
     const email = formData.get('email');
     const password = formData.get('password');
@@ -48,10 +44,7 @@ export const loginAction = async (
   }
 };
 
-export const registerAction = async (
-  _: AuthActionResult,
-  formData: FormData
-): Promise<AuthActionResult> => {
+export const registerAction = async (_, formData) => {
   try {
     const name = formData.get('name');
     const email = formData.get('email');
