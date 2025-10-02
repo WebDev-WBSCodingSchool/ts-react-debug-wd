@@ -1,15 +1,12 @@
 import { useActionState, useEffect, useState, type ChangeEvent } from 'react';
-import { type AuthActionResult, isErrorResult, isSuccessResult } from '@/types';
+
 import { Link, Navigate, useNavigate } from 'react-router';
 import { useAuth } from '@/contexts';
 import { registerAction } from '@/actions';
 
 const Register = () => {
   const navigate = useNavigate();
-  const [actionData, submitAction, isPending] = useActionState(
-    registerAction,
-    {} as AuthActionResult
-  );
+  const [actionData, submitAction, isPending] = useActionState(registerAction, {});
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const { isAuthenticated } = useAuth();
 
@@ -18,7 +15,7 @@ const Register = () => {
   };
 
   useEffect(() => {
-    if (isSuccessResult(actionData)) {
+    if (actionData.success) {
       navigate('/login', {
         replace: true
       });
@@ -33,7 +30,7 @@ const Register = () => {
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>Create your account</h2>
         </div>
-        {isErrorResult(actionData) && (
+        {actionData.error && (
           <div className='alert alert-error'>
             <span>{actionData.error}</span>
           </div>

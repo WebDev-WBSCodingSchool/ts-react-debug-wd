@@ -1,26 +1,8 @@
-import {
-  useActionState,
-  useState,
-  useEffect,
-  useRef,
-  startTransition,
-  type RefObject,
-  type ChangeEvent
-} from 'react';
-import { isErrorResult, isSuccessResult, type CreateActionResult } from '@/types';
+import { useActionState, useState, useEffect, useRef, startTransition } from 'react';
 import { createEventAction } from '@/actions';
 
-export default function CreateEventModal({
-  refreshForNewEvent,
-  modalRef
-}: {
-  refreshForNewEvent: () => void;
-  modalRef: RefObject<HTMLDialogElement | null>;
-}) {
-  const [actionData, submitAction, isPending] = useActionState(
-    createEventAction,
-    {} as CreateActionResult
-  );
+export default function CreateEventModal({ refreshForNewEvent, modalRef }) {
+  const [actionData, submitAction, isPending] = useActionState(createEventAction, {});
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -29,9 +11,9 @@ export default function CreateEventModal({
     latitude: '',
     longitude: ''
   });
-  const formRef = useRef<HTMLFormElement | null>(null);
+  const formRef = useRef(null);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -48,12 +30,11 @@ export default function CreateEventModal({
   };
 
   useEffect(() => {
-    if (isSuccessResult(actionData)) {
-      cleanUp();
+    cleanUp();
 
-      // TODO: fix error so it only refreshes if you didn't cancel
-      if (actionData?.message !== 'Event cancelled') refreshForNewEvent();
-    }
+    // TODO: fix error so it only refreshes if you didn't cancel
+    if (actionData?.message !== 'Event cancelled') refreshForNewEvent();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionData]);
 
@@ -61,7 +42,7 @@ export default function CreateEventModal({
     <dialog ref={modalRef} className='modal' onClose={cleanUp}>
       <div className='modal-box w-full max-w-2xl'>
         <h3 className='font-bold text-xl lg:text-2xl mb-6'>Create New Event</h3>
-        {isErrorResult(actionData) && (
+        {actionData.error && (
           <div className='alert alert-error'>
             <span>{actionData.error}</span>
           </div>

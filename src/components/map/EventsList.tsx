@@ -1,13 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
-import type { Event } from '@/types';
-
-const EventsList = ({
-  events,
-  setHighlightedEvent
-}: {
-  events: Event[];
-  setHighlightedEvent: Dispatch<SetStateAction<Event | null>>;
-}) => {
+const EventsList = ({ events, setHighlightedEvent }) => {
   return events.map((event) => (
     <div
       key={event.id}

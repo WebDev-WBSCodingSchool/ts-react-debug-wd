@@ -1,12 +1,11 @@
-import type { AuthUser, AuthContextType } from '@/types';
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthContext } from '.';
 
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-const AuthProvider = ({ children }: { children: ReactNode }) => {
+const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +21,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
             const error = await response.json();
             throw new Error(error.message || 'Failed to get profile');
           }
-          const profile: AuthUser = await response.json();
+          const profile = await response.json();
           localStorage.setItem('token', token);
           localStorage.setItem('user', JSON.stringify(profile));
           setUser(profile);
@@ -37,7 +36,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     tryToLoginUser();
   }, [token]);
 
-  const login = (token: string) => {
+  const login = (token) => {
     setToken(token);
   };
 
@@ -50,7 +49,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const isAuthenticated = Boolean(token && user);
 
-  const value: AuthContextType = {
+  const value = {
     user,
     token,
     login,
@@ -59,7 +58,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     loading
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext value={value}>{children}</AuthContext>;
 };
 
 export default AuthProvider;

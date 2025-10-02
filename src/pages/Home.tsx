@@ -4,7 +4,7 @@ import { getHomePageData } from '@/data';
 import { FaCalendarAlt, FaUsers, FaMapMarkerAlt, FaShare } from 'react-icons/fa';
 
 const Home = () => {
-  const [count, setCount] = useState<{ userCount: number; eventsCount: number }>({
+  const [count, setCount] = useState({
     userCount: 0,
     eventsCount: 0
   });

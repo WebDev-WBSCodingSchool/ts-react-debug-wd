@@ -1,11 +1,6 @@
-import { type EventsResponse, type UsersResponse } from '@/types';
-
 const API_URL = import.meta.env.VITE_EVENTS_API_URL;
 
-export const getHomePageData = async (): Promise<{
-  userCount: number;
-  eventsCount: number;
-}> => {
+export const getHomePageData = async () => {
   if (!API_URL)
     throw new Error(
       'Something tells me you forgot to set the VITE_EVENTS_API_URL environment variable.'
@@ -16,9 +11,6 @@ export const getHomePageData = async (): Promise<{
   if (!resUsers.ok || !resEvents.ok) {
     throw new Error('Failed to fetch data');
   }
-  const [users, events] = await Promise.all([
-    resUsers.json() as Promise<UsersResponse>,
-    resEvents.json() as Promise<EventsResponse>
-  ]);
+  const [users, events] = await Promise.all([resUsers.json(), resEvents.json()]);
   return { userCount: users.totalCount, eventsCount: events.totalCount };
 };
